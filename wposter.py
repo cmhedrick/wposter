@@ -64,9 +64,35 @@ def read_post(post_id):
 
     try:
         clean_json = clean_json_response(
-            urllib.request.urlopen(api_url + 'wp/v2/posts' + str(post_id))
+            urllib.request.urlopen(api_url + 'wp/v2/posts/' + str(post_id))
         )
         posts = json.loads(clean_json)
+    except urllib.error.HTTPError as e:
+        print(
+            '{0}{1}'.format(
+                ALERT + '[!]' + END,
+                e.code
+            )
+        )
+    except urllib.error.URLError as e:
+        print(
+            '{0}{1}'.format(
+                ALERT + '[!]' + END,
+                e.code
+            )
+        )
+
+def get_users():
+    try:
+        clean_json = clean_json_response(
+            urllib.request.urlopen(api_url + 'wp/v2/users')
+        )
+        posts = json.loads(clean_json)
+        for post in posts:
+            print(SUCCESS + '[+]' + END + '{0}: {1}'.format(
+                post['id'], post['name'])
+            )
+
     except urllib.error.HTTPError as e:
         print(
             '{0}{1}'.format(
@@ -113,7 +139,7 @@ while cmd != 'q'.lower():
         get_posts()
 
     elif cmd == 'users':
-        print(ALERT + '[<>]' + 'FUNCTION COMING SOON!')
+        get_users()
 
     elif cmd == 'q'.lower():
         print(NOTICE + '[<3]' + END + 'Thanks for playing!')
