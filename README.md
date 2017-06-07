@@ -47,3 +47,5 @@ Will enumerate all the posts on the site. Providing you with PostID and Title.
 **Not fully implemented yet!** But this will eventually allow a user to call the function to get another prompt. Which then will scrape a copy of the WordPress post with that given ID. This way the copy can be open locally in your browser!
 5. `q`
 Kills the session. Provides a cute message on exit.
+
+*Shout out to Dillinger.io for the awesome Mark Writer*
