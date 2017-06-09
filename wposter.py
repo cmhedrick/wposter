@@ -66,7 +66,16 @@ def read_post(post_id):
         clean_json = clean_json_response(
             urllib.request.urlopen(api_url + 'wp/v2/posts/' + str(post_id))
         )
-        posts = json.loads(clean_json)
+        post = json.loads(clean_json)
+        local_post = open('local_post.html', "w")
+        local_post.write(post['content']['rendered'])
+        local_post.close()
+        print(
+            SUCCESS + '[+]' + END + 'Post: {0} | Downloaded'.format(
+                post['title']['rendered']
+            )
+        )
+
     except urllib.error.HTTPError as e:
         print(
             '{0}{1}'.format(

@@ -1,6 +1,7 @@
 # wposter ignores
 config.py
 notes/
+local_post.html
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
