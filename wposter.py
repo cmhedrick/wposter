@@ -117,6 +117,34 @@ def get_users():
             )
         )
 
+def get_media():
+    try:
+        clean_json = clean_json_response(
+            urllib.request.urlopen(api_url + 'wp/v2/media')
+        )
+        posts = json.loads(clean_json)
+        #import pdb; pdb.set_trace()
+        for post in posts:
+            print(SUCCESS + '[+]' + END + 'Author:{0} Link:{1} Title:{2}'.format(
+                post['author'], post['link'], post['title'])
+                  )
+
+    except urllib.error.HTTPError as e:
+        print(
+            '{0}{1}'.format(
+                ALERT + '[!]' + END,
+                e.code
+            )
+        )
+    except urllib.error.URLError as e:
+        print(
+            '{0}{1}'.format(
+                ALERT + '[!]' + END,
+                e.code
+            )
+        )
+
+
 # menu
 while cmd != 'q'.lower():
     # display menu and get cmd
@@ -125,6 +153,7 @@ while cmd != 'q'.lower():
     print('users | get users')
     print('posts | get post info')
     print('read | read post by id')
+    print('media | get media files')
     print('q | kill session')
     cmd = input('==> ')
 
@@ -143,6 +172,9 @@ while cmd != 'q'.lower():
 
     elif cmd == 'read'.lower():
         read_post(input('ID of post==> '))
+
+    elif cmd == 'media'.lower():
+        get_media()
 
     elif cmd == 'posts'.lower():
         get_posts()
