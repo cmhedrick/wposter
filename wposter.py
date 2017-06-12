@@ -1,4 +1,3 @@
-import sys
 import json
 import urllib.parse
 import urllib.request
@@ -45,21 +44,37 @@ def get_posts():
     Prints a list of posts and IDs in format 'ID: title: author ID'
     :return: None
     '''
+    try:
+        clean_json = clean_json_response(
+            urllib.request.urlopen(api_url + 'wp/v2/posts')
+        )
+        posts = json.loads(clean_json)
+        for post in posts:
+            print(SUCCESS + '[+]' + END + '{0}: {1}: {2}'.format(
+                post['id'], post['title']['rendered'], post['author'])
+            )
 
-    clean_json = clean_json_response(
-        urllib.request.urlopen(api_url + 'wp/v2/posts')
-    )
-    posts = json.loads(clean_json)
-    for post in posts:
-        print(SUCCESS + '[+]' + END + '{0}: {1}: {2}'.format(
-            post['id'], post['title']['rendered'], post['author'])
+    except urllib.error.HTTPError as e:
+        print(
+            '{0}{1}'.format(
+                ALERT + '[!]' + END,
+                e.code
+            )
+        )
+
+    except urllib.error.URLError as e:
+        print(
+            '{0}{1}'.format(
+                ALERT + '[!]' + END,
+                e.code
+            )
         )
 
 def read_post(post_id):
     '''
-    Gets information on selected post
+    makes local copy of the site, prints line to indicate title of download
     :param post_id: int
-    :return:
+    :return: None
     '''
 
     try:
@@ -83,6 +98,7 @@ def read_post(post_id):
                 e.code
             )
         )
+
     except urllib.error.URLError as e:
         print(
             '{0}{1}'.format(
@@ -92,6 +108,10 @@ def read_post(post_id):
         )
 
 def get_users():
+    '''
+    prints lines of users in format: id, name
+    :return:
+    '''
     try:
         clean_json = clean_json_response(
             urllib.request.urlopen(api_url + 'wp/v2/users')
@@ -118,6 +138,10 @@ def get_users():
         )
 
 def get_media():
+    '''
+    prints lines containing information on uploaded media in format: 'author link title'
+    :return:
+    '''
     try:
         clean_json = clean_json_response(
             urllib.request.urlopen(api_url + 'wp/v2/media')
@@ -126,7 +150,7 @@ def get_media():
         #import pdb; pdb.set_trace()
         for post in posts:
             print(SUCCESS + '[+]' + END + 'Author:{0} Link:{1} Title:{2}'.format(
-                post['author'], post['link'], post['title'])
+                post['author'], post['link'], post['title']['rendered'])
                   )
 
     except urllib.error.HTTPError as e:
@@ -136,6 +160,46 @@ def get_media():
                 e.code
             )
         )
+
+    except urllib.error.URLError as e:
+        print(
+            '{0}{1}'.format(
+                ALERT + '[!]' + END,
+                e.code
+            )
+        )
+
+def rest_vuln_test():
+    '''
+    tests wordpress site to see if site is vulnerable to REST API payloads. Test comes from
+    https://www.exploit-db.com/exploits/41223/
+    :return:
+    '''
+    try:
+        response = urllib.request.urlopen(base_url)
+        data = HTML(response.read())
+        pased_data = data.xpath('//link[@rel="https://api.w.org/"]/@href')[0]
+
+        # check if we have permalinks
+        if 'rest_route' in pased_data:
+            print(
+                '{0}{1}'.format(
+                    ALERT + '[!]' + END,
+                    'Permalinks may not be enabled. REST API content injection not possible.'
+                )
+            )
+
+        else:
+            print(SUCCESS + '[+]' + END + 'Possibly vulnerable to REST API Content Injection.')
+
+    except urllib.error.HTTPError as e:
+        print(
+            '{0}{1}'.format(
+                ALERT + '[!]' + END,
+                e.code
+            )
+        )
+
     except urllib.error.URLError as e:
         print(
             '{0}{1}'.format(
@@ -154,6 +218,7 @@ while cmd != 'q'.lower():
     print('posts | get post info')
     print('read | read post by id')
     print('media | get media files')
+    print('test | test if site is unprotected')
     print('q | kill session')
     cmd = input('==> ')
 
@@ -181,6 +246,9 @@ while cmd != 'q'.lower():
 
     elif cmd == 'users':
         get_users()
+
+    elif cmd == 'test':
+        rest_vuln_test()
 
     elif cmd == 'q'.lower():
         print(NOTICE + '[<3]' + END + 'Thanks for playing!')
