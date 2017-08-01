@@ -66,7 +66,7 @@ def get_posts():
         print(
             '{0}{1}'.format(
                 ALERT + '[!]' + END,
-                e.code
+                e.reason.strerror
             )
         )
 
@@ -103,7 +103,7 @@ def read_post(post_id):
         print(
             '{0}{1}'.format(
                 ALERT + '[!]' + END,
-                e.code
+                e.reason.strerror
             )
         )
 
@@ -133,7 +133,7 @@ def get_users():
         print(
             '{0}{1}'.format(
                 ALERT + '[!]' + END,
-                e.code
+                e.reason.strerror
             )
         )
 
@@ -165,7 +165,7 @@ def get_media():
         print(
             '{0}{1}'.format(
                 ALERT + '[!]' + END,
-                e.code
+                e.reason.strerror
             )
         )
 
@@ -204,7 +204,7 @@ def rest_vuln_test():
         print(
             '{0}{1}'.format(
                 ALERT + '[!]' + END,
-                e.code
+                e.reason.strerror
             )
         )
 
