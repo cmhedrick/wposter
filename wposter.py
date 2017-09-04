@@ -2,7 +2,7 @@ import json
 import urllib.parse
 import urllib.request
 
-from lxml.etree import HTML
+from bs4 import BeautifulSoup
 
 # config for lazy testing
 import config
@@ -26,6 +26,12 @@ api_url = 'wp-json/'
 print('\n-------------------')
 print('Welcome to WPoster!')
 print('-------------------')
+
+
+class MozillaOpener(urllib.request.FancyURLopener):
+    version = "Mozilla/5.0"
+
+url_open = MozillaOpener()
 
 def clean_json_response(dirty_json):
     '''
@@ -208,6 +214,35 @@ def rest_vuln_test():
             )
         )
 
+def get_uploads():
+    '''
+    Will do a lazy scan and print directories to check for uploads
+    :return:
+    '''
+    try:
+
+        import pdb; pdb.set_trace()
+        xxx = url_open.open(base_url + 'content/uploads/')
+        # for post in posts:
+        #     print(SUCCESS + '[+]' + END + '{0}: {1}'.format(
+        #         post['id'], post['name'])
+        #           )
+
+    except urllib.error.HTTPError as e:
+        print(
+            '{0}{1}'.format(
+                ALERT + '[!]' + END,
+                e.code
+            )
+        )
+    except urllib.error.URLError as e:
+        print(
+            '{0}{1}'.format(
+                ALERT + '[!]' + END,
+                e.reason.strerror
+            )
+        )
+
 
 # menu
 while cmd != 'q'.lower():
@@ -218,6 +253,7 @@ while cmd != 'q'.lower():
     print('posts | get post info')
     print('read | read post by id')
     print('media | get media files')
+    print('uploads | get uploaded files')
     print('test | test if site is unprotected')
     print('q | kill session')
     cmd = input('==> ')
@@ -240,6 +276,9 @@ while cmd != 'q'.lower():
 
     elif cmd == 'media'.lower():
         get_media()
+
+    elif cmd == 'uploads'.lower():
+        get_uploads()
 
     elif cmd == 'posts'.lower():
         get_posts()
