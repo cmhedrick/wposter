@@ -28,10 +28,9 @@ print('Welcome to WPoster!')
 print('-------------------')
 
 
-class MozillaOpener(urllib.request.FancyURLopener):
-    version = "Mozilla/5.0"
+def request(url):
+    return urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
 
-url_open = MozillaOpener()
 
 def clean_json_response(dirty_json):
     '''
@@ -52,7 +51,7 @@ def get_posts():
     '''
     try:
         clean_json = clean_json_response(
-            urllib.request.urlopen(api_url + 'wp/v2/posts')
+            urllib.request.urlopen(request(api_url + 'wp/v2/posts'))
         )
         posts = json.loads(clean_json)
         for post in posts:
@@ -85,7 +84,9 @@ def read_post(post_id):
 
     try:
         clean_json = clean_json_response(
-            urllib.request.urlopen(api_url + 'wp/v2/posts/' + str(post_id))
+            urllib.request.urlopen(
+                request(api_url + 'wp/v2/posts/' + str(post_id))
+            )
         )
         post = json.loads(clean_json)
         local_post = open('local_post.html', "w")
@@ -120,7 +121,9 @@ def get_users():
     '''
     try:
         clean_json = clean_json_response(
-            urllib.request.urlopen(api_url + 'wp/v2/users')
+            urllib.request.urlopen(
+                request(api_url + 'wp/v2/users')
+            )
         )
         posts = json.loads(clean_json)
         for post in posts:
@@ -150,7 +153,9 @@ def get_media():
     '''
     try:
         clean_json = clean_json_response(
-            urllib.request.urlopen(api_url + 'wp/v2/media')
+            urllib.request.urlopen(
+                request(api_url + 'wp/v2/media')
+            )
         )
         posts = json.loads(clean_json)
         #import pdb; pdb.set_trace()
@@ -175,75 +180,6 @@ def get_media():
             )
         )
 
-def rest_vuln_test():
-    '''
-    tests wordpress site to see if site is vulnerable to REST API payloads. Test comes from
-    https://www.exploit-db.com/exploits/41223/
-    :return:
-    '''
-    try:
-        response = urllib.request.urlopen(base_url)
-        data = HTML(response.read())
-        pased_data = data.xpath('//link[@rel="https://api.w.org/"]/@href')[0]
-
-        # check if we have permalinks
-        if 'rest_route' in pased_data:
-            print(
-                '{0}{1}'.format(
-                    ALERT + '[!]' + END,
-                    'Permalinks may not be enabled. REST API content injection not possible.'
-                )
-            )
-
-        else:
-            print(SUCCESS + '[+]' + END + 'Possibly vulnerable to REST API Content Injection.')
-
-    except urllib.error.HTTPError as e:
-        print(
-            '{0}{1}'.format(
-                ALERT + '[!]' + END,
-                e.code
-            )
-        )
-
-    except urllib.error.URLError as e:
-        print(
-            '{0}{1}'.format(
-                ALERT + '[!]' + END,
-                e.reason.strerror
-            )
-        )
-
-def get_uploads():
-    '''
-    Will do a lazy scan and print directories to check for uploads
-    :return:
-    '''
-    try:
-
-        import pdb; pdb.set_trace()
-        xxx = url_open.open(base_url + 'content/uploads/')
-        # for post in posts:
-        #     print(SUCCESS + '[+]' + END + '{0}: {1}'.format(
-        #         post['id'], post['name'])
-        #           )
-
-    except urllib.error.HTTPError as e:
-        print(
-            '{0}{1}'.format(
-                ALERT + '[!]' + END,
-                e.code
-            )
-        )
-    except urllib.error.URLError as e:
-        print(
-            '{0}{1}'.format(
-                ALERT + '[!]' + END,
-                e.reason.strerror
-            )
-        )
-
-
 # menu
 while cmd != 'q'.lower():
     # display menu and get cmd
@@ -253,8 +189,7 @@ while cmd != 'q'.lower():
     print('posts | get post info')
     print('read | read post by id')
     print('media | get media files')
-    print('uploads | get uploaded files')
-    print('test | test if site is unprotected')
+    #print('uploads | get uploaded files')
     print('q | kill session')
     cmd = input('==> ')
 
@@ -277,17 +212,14 @@ while cmd != 'q'.lower():
     elif cmd == 'media'.lower():
         get_media()
 
-    elif cmd == 'uploads'.lower():
-        get_uploads()
+    # elif cmd == 'uploads'.lower():
+    #     get_uploads()
 
     elif cmd == 'posts'.lower():
         get_posts()
 
     elif cmd == 'users':
         get_users()
-
-    elif cmd == 'test':
-        rest_vuln_test()
 
     elif cmd == 'q'.lower():
         print(NOTICE + '[<3]' + END + 'Thanks for playing!')
