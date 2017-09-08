@@ -48,10 +48,7 @@ Will enumerate all the posts on the site. Providing you with PostID and Title.
 But this will eventually allow a user to call the function to get another prompt. Which then will scrape a copy of the WordPress post with that given ID. This way the copy can be open locally in your browser!
 5. `media`
 Prints lines of all media accessible. Provides the poster, link and title of media.
-6. `test`
-Tests the WordPress instance to check if it's vulnerable to REST API Content Injection based on the POC: https://www.exploit-db.com/exploits/41223/.
-More info: https://blog.sucuri.net/2017/02/content-injection-vulnerability-wordpress-rest-api.html
-7. `q`
+6. `q`
 Kills the session. Provides a cute message on exit.
 
 *Shout out to Dillinger.io for the awesome Mark Up Writer*
