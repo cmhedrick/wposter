@@ -180,6 +180,39 @@ def get_media():
             )
         )
 
+def get_uploads():
+    '''
+    Will do a lazy scan and print directories to check for uploads
+    :return:
+    '''
+    try:
+        html = urllib.request.urlopen(
+                request(base_url + 'content/uploads/')
+        )
+        parsed_html = BeautifulSoup(html, 'html.parser')
+
+        for upload_dir in parsed_html.find_all('a')[5:]:
+            print(
+                SUCCESS + '[+]' + END + '{0}{1}'.format(
+                    base_url, upload_dir.get('href')
+                )
+            )
+
+    except urllib.error.HTTPError as e:
+        print(
+            '{0}{1}'.format(
+                ALERT + '[!]' + END,
+                e.code
+            )
+        )
+    except urllib.error.URLError as e:
+        print(
+            '{0}{1}'.format(
+                ALERT + '[!]' + END,
+                e.reason.strerror
+            )
+        )
+
 # menu
 while cmd != 'q'.lower():
     # display menu and get cmd
@@ -189,7 +222,7 @@ while cmd != 'q'.lower():
     print('posts | get post info')
     print('read | read post by id')
     print('media | get media files')
-    #print('uploads | get uploaded files')
+    print('uploads | get uploaded files')
     print('q | kill session')
     cmd = input('==> ')
 
@@ -212,8 +245,8 @@ while cmd != 'q'.lower():
     elif cmd == 'media'.lower():
         get_media()
 
-    # elif cmd == 'uploads'.lower():
-    #     get_uploads()
+    elif cmd == 'uploads'.lower():
+        get_uploads()
 
     elif cmd == 'posts'.lower():
         get_posts()
