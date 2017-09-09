@@ -48,7 +48,9 @@ Will enumerate all the posts on the site. Providing you with PostID and Title.
 But this will eventually allow a user to call the function to get another prompt. Which then will scrape a copy of the WordPress post with that given ID. This way the copy can be open locally in your browser!
 5. `media`
 Prints lines of all media accessible. Provides the poster, link and title of media.
-6. `q`
+6. `uploads`
+Print results of root directories for uploads.
+7. `q`
 Kills the session. Provides a cute message on exit.
 
 *Shout out to Dillinger.io for the awesome Mark Up Writer*
