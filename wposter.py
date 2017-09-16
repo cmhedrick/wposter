@@ -127,8 +127,8 @@ def get_users():
         )
         posts = json.loads(clean_json)
         for post in posts:
-            print(SUCCESS + '[+]' + END + '{0}: {1}'.format(
-                post['id'], post['name'])
+            print(SUCCESS + '[+]' + END + '{0}: user:{1} name:{2}'.format(
+                post['id'], post['slug'], post['name'])
             )
 
     except urllib.error.HTTPError as e:
@@ -182,36 +182,48 @@ def get_media():
 
 def get_uploads():
     '''
-    Will do a lazy scan and print directories to check for uploads
+    Will do a lazy scan and print directories to check for uploads.
+    Attempts to connect to default then common routes
     :return:
     '''
-    try:
-        html = urllib.request.urlopen(
-                request(base_url + 'content/uploads/')
-        )
-        parsed_html = BeautifulSoup(html, 'html.parser')
+    import pdb; pdb.set_trace()
+    attempts = 0
+    while attempts < 2:
+        try:
+            if attempts == 0:
+                html = urllib.request.urlopen(
+                        request(base_url + 'content/uploads/')
+                )
+            if attempts == 1:
+                html = urllib.request.urlopen(
+                        request(base_url + 'wp-content/uploads/')
+                )
+                
+            parsed_html = BeautifulSoup(html, 'html.parser')
 
-        for upload_dir in parsed_html.find_all('a')[5:]:
+            for upload_dir in parsed_html.find_all('a')[5:]:
+                print(
+                    SUCCESS + '[+]' + END + '{0}{1}'.format(
+                        base_url, upload_dir.get('href')
+                    )
+                )
+
+        except urllib.error.HTTPError as e:
+            attempts += 1
             print(
-                SUCCESS + '[+]' + END + '{0}{1}'.format(
-                    base_url, upload_dir.get('href')
+                '{0}{1}'.format(
+                    ALERT + '[!]' + END,
+                    e.code
                 )
             )
-
-    except urllib.error.HTTPError as e:
-        print(
-            '{0}{1}'.format(
-                ALERT + '[!]' + END,
-                e.code
+        except urllib.error.URLError as e:
+            attempts += 1
+            print(
+                '{0}{1}'.format(
+                    ALERT + '[!]' + END,
+                    e.reason.strerror
+                )
             )
-        )
-    except urllib.error.URLError as e:
-        print(
-            '{0}{1}'.format(
-                ALERT + '[!]' + END,
-                e.reason.strerror
-            )
-        )
 
 # menu
 while cmd != 'q'.lower():
