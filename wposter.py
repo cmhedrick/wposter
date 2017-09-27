@@ -186,7 +186,6 @@ def get_uploads():
     Attempts to connect to default then common routes
     :return:
     '''
-    import pdb; pdb.set_trace()
     attempts = 0
     while attempts < 2:
         try:
